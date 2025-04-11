@@ -1,0 +1,20 @@
+# Fichiers d'environnement
+.env
+*.env
+
+# Auth / secrets
+auth/credentials.json
+auth/token.json
+
+# Dossiers Python compilés
+__pycache__/
+*.py[cod]
+
+# Environnement virtuel local
+venv/
+
+# Fichiers systèmes
+.DS_Store
+
+# Fichiers de logs éventuels
+*.log
