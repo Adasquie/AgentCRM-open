@@ -1,6 +1,5 @@
 import os
 import tempfile
-import asyncio
 from datetime import date
 from dotenv import load_dotenv
 from telegram import Update
