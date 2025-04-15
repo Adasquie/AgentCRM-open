@@ -16,3 +16,5 @@ venv/
 *.logauth/token.json
 auth/credentials.json
 auth/token.json
+auth/token.json
+auth/credentials.json
