@@ -9,10 +9,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from openai import OpenAI
 from agents import Runner
-from src.agent_factory import create_prospect_agent
-from src.tools import memory, airtable, telegram
 
-load_dotenv()
+
+print("🚨 DEBUG ENV VARS")
+print("AIRTABLE_API_KEY:", os.getenv("AIRTABLE_API_KEY"))
+print("BASE_ID:", os.getenv("AIRTABLE_BASE_ID"))
+print("TABLE_NAME:", os.getenv("AIRTABLE_TABLE_NAME"))
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 application = Application.builder().token(TELEGRAM_TOKEN).build()
@@ -20,6 +22,14 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Remplis avec ton chat_id fixe si connu
 CHAT_ID = os.getenv("ADMIN_CHAT_ID") or None
+
+print("🚨 DEBUG ENV VARS")
+print("AIRTABLE_API_KEY:", os.getenv("AIRTABLE_API_KEY"))
+print("BASE_ID:", os.getenv("AIRTABLE_BASE_ID"))
+print("TABLE_NAME:", os.getenv("AIRTABLE_TABLE_NAME"))
+
+from src.agent_factory import create_prospect_agent
+from src.tools import memory, airtable, telegram
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global CHAT_ID
@@ -35,7 +45,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     memory.add_interaction(user_input, role="user")
     
-    server_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "src", "server", "server.py"))
+    server_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "src", "server", "server_mcp.py"))
     agent = await create_prospect_agent(server_file, chat_id)
 
     result = await Runner.run(agent, input=user_input)
@@ -59,7 +69,7 @@ async def handle_voice_message(update: Update, context: ContextTypes.DEFAULT_TYP
     transcribed_text = transcript.text
     memory.add_interaction(transcribed_text, role="user")
 
-    server_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "server.py"))
+    server_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "server_mcp.py"))
     agent = await create_prospect_agent(server_file, chat_id)
 
     result = await Runner.run(agent, input=transcribed_text)
@@ -92,6 +102,7 @@ scheduler.add_job(send_daily_reminder, 'cron', hour=8, minute=0)
 scheduler.start()
 
 if __name__ == "__main__":
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     application.add_handler(MessageHandler(filters.VOICE | filters.AUDIO, handle_voice_message))

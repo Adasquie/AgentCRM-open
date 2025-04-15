@@ -2,6 +2,7 @@ from agents import Agent
 from agents.mcp import MCPServerStdio
 from src.tools import memory
 from datetime import datetime
+import os
 _prospect_server_instance = None
 
 async def create_prospect_agent(server_file_path: str, chat_id: int) -> Agent:
@@ -10,7 +11,15 @@ async def create_prospect_agent(server_file_path: str, chat_id: int) -> Agent:
     if _prospect_server_instance is None:
         _prospect_server_instance = MCPServerStdio(
             name="Prospection MCP Server",
-            params={"command": "python3", "args": [server_file_path]},
+            params={
+                "command": "python3",
+                "args": [server_file_path],
+                "env": {
+                    "AIRTABLE_API_KEY": os.getenv("AIRTABLE_API_KEY"),
+                    "AIRTABLE_BASE_ID": os.getenv("AIRTABLE_BASE_ID"),
+                    "AIRTABLE_TABLE_NAME": os.getenv("AIRTABLE_TABLE_NAME"),
+                },
+            },
         )
         await _prospect_server_instance.connect()
 
@@ -18,7 +27,7 @@ async def create_prospect_agent(server_file_path: str, chat_id: int) -> Agent:
 
     agent = Agent(
         name="Bot Lead",
-        model="gpt-4o-2024-11-20",
+        model="gpt-4.1-mini",
         instructions = f"""
 Tu es un assistant de prospection commerciale connecté à Telegram et à une base Airtable.
 Tu connais la date actuelle : {datetime.now().strftime("%A %d %B %Y")}.

@@ -1,48 +1,75 @@
-# 🤖 BotLead — Assistant de prospection IA (Telegram + Airtable)
+Voici une version complète et soignée de ton README, prête à impressionner aussi bien des utilisateurs que des recruteurs ou des prospects 👇
 
-BotLead est un assistant IA de prospection automatisée connecté à :
-- 🧠 OpenAI GPT-4o
-- 🗂️ Airtable (gestion de leads)
-- 📅 Google Calendar (prise de RDV)
-- 💬 Telegram (interface utilisateur)
+⸻
 
-L’agent t’aide à :
-- Ajouter/modifier des prospects
-- Planifier des rappels automatiques
-- Créer des événements Google Meet
-- Suivre et relancer les leads facilement
+🤖 BotLead — Assistant IA de prospection commerciale (Telegram + Airtable + Google)
 
----
+BotLead, c’est un agent IA connecté à tes outils métiers, qui t’aide à gérer tes leads directement depuis Telegram.
+Il automatise les relances, planifie des rendez-vous et garde la mémoire des échanges.
+Pensé pour les pros, il est rapide, simple à lancer, et 100% personnalisable.
 
-## 🚀 Lancement local
+⸻
 
-### 1. Clone du projet
+⚙️ Fonctionnalités
+	•	🔍 Ajout & édition de leads (nom, statut, note…)
+	•	🔁 Relance automatique avec planification intelligente
+	•	📅 Création de rendez-vous Google Meet via Google Calendar
+	•	🧠 Mémoire conversationnelle (10 derniers messages)
+	•	📩 Interaction fluide depuis Telegram
 
-```bash
+⸻
+
+🚀 Lancement local
+
+1. Cloner le projet
+
 git clone https://github.com/ton-user/BotLead.git
 cd BotLead
 
-2. Création d’un environnement virtuel
+2. Créer un environnement virtuel
 
 python3 -m venv venv
 source venv/bin/activate
 
-3. Installation des dépendances
+3. Installer les dépendances
+
 pip install -r requirements.txt
 
-4. Variables d’environnement
+4. Ajouter les variables d’environnement
+
+Crée un fichier .env à la racine :
 
 OPENAI_API_KEY=sk-...
 AIRTABLE_API_KEY=...
 AIRTABLE_BASE_ID=...
 AIRTABLE_TABLE_NAME=...
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
 TELEGRAM_BOT_TOKEN=...
-TELEGRAM_CHAT_ID=...
+ADMIN_CHAT_ID=...
 
-5. Lancement
+5. Authentification Google (Calendar + Gmail)
+
+Ajoute manuellement les fichiers suivants dans le dossier auth/ :
+	•	credentials.json → depuis Google Cloud Console
+	•	token.json → généré automatiquement au premier lancement
+
+📌 Si token.json est absent, une page Google s’ouvrira pour te connecter et générer l’accès (stocké ensuite localement).
+
+⸻
+
+✅ Lancer le bot
+
 python main.py
+
+Tu peux ensuite parler au bot directement via Telegram.
+Il répondra automatiquement à tous tes messages.
+
+⸻
+
+🧠 Comment ça marche ?
+
+L’agent IA est orchestré avec le Model Context Protocol (MCP) via le SDK OpenAI Agents.
+
+🔍 Structure du projet :
 
 BotLead/
 ├── auth/                 # Auth Google (token, credentials)
@@ -51,37 +78,50 @@ BotLead/
 │   └── token.json
 ├── src/
 │   ├── tools/            # Fonctions Airtable, Google, Telegram
-│   └── server/           # MCP tools exposés
-│   ├── agent_factory.py  # Création de l’agent
+│   ├── server/           # MCP tools exposés
+│   └── agent_factory.py  # Création de l’agent
 ├── main.py               # Entrée du bot
-├── requirements.txt      # Dépendances
+├── requirements.txt
 ├── Procfile              # Pour Railway
 ├── .env                  # Variables d’environnement (non commit)
 
-🛠 Stack technique
-	•	Python 3.11+
-	•	OpenAI Agent SDK (MCP)
-	•	Airtable + Google API
-	•	Telegram Bot
-	•	Railway (déploiement)
-
-🧠 Fonctionnement de l’agent
-
-L’agent est orchestré via MCP (Model Context Protocol) :
-	•	Tools : déclarés dans src/server/server.py
-	•	Mémoire : 10 derniers messages Telegram
+🧠 Détails techniques :
 	•	Modèle : gpt-4o-2024-11-20
-	•	Interaction : naturelle, rapide, fluide
-
+	•	Mémoire : 10 derniers messages par chat_id
+	•	MCP tools : calendriers, mails, Airtable, etc.
 
 ⸻
 
-📦 Déploiement Railway
+☁️ Déploiement Railway
 	1.	Connecte ton repo GitHub
-	2.	Ajoute les variables d’environnement
-	3.	Railway détectera automatiquement le Procfile
-	4.	C’est parti 🚀
+	2.	Ajoute les variables d’environnement dans Railway
+	3.	Push ton code
+	4.	Le Procfile sera détecté automatiquement
+	5.	C’est en ligne 🚀
 
-🧑‍💻 Auteur
+ℹ️ Le container vérifiera automatiquement la présence de credentials.json et token.json au bon endroit (/auth/).
+Tu peux les gérer manuellement ou prévoir un mécanisme externe si tu le distribues.
 
-Créé par Alexandre Dasquié — automatisation IA pour PME.
+⸻
+
+📜 Licence
+
+BotLead est distribué sous licence GNU AGPL v3 (Affero General Public License).
+
+Cela signifie que :
+	•	Tu es libre de l’utiliser, modifier, distribuer et héberger ce projet.
+	•	Toute version modifiée déployée publiquement doit également publier son code source.
+	•	Tu es responsable de ta propre configuration (API, tokens, sécurité…).
+
+© 2025 Alexandre Dasquié
+Pour plus d’infos : gnu.org/licenses/agpl-3.0.html
+
+⸻
+
+👨‍💻 Auteur
+
+Alexandre Dasquié
+Créateur d’agents IA sur-mesure pour PME.
+Tu veux automatiser les mails, RDV, relances ou extractions ? Parlons-en 👇
+
+📬 LinkedIn : https://www.linkedin.com/in/alexandre-dasquie-796452155/ | ✉️ a.dasquie@gmail.com

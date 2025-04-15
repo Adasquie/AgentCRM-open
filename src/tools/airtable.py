@@ -1,43 +1,33 @@
 import os
 import requests
-from dotenv import load_dotenv
 from pyairtable import Table
-from datetime import datetime, date
+from datetime import date
 
-load_dotenv()
+def get_airtable_table():
+    api_key = os.getenv("AIRTABLE_API_KEY")
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    table_name = os.getenv("AIRTABLE_TABLE_NAME")
 
-API_KEY = os.getenv("AIRTABLE_API_KEY")
-BASE_ID = os.getenv("AIRTABLE_BASE_ID")
-TABLE_NAME = os.getenv("AIRTABLE_TABLE_NAME")
+    if not all([api_key, base_id, table_name]):
+        raise RuntimeError("❌ Variables d'environnement Airtable manquantes")
 
-table = Table(API_KEY, BASE_ID, TABLE_NAME)
-
-HEADERS = {
-    "Authorization": f"Bearer {API_KEY}",
-    "Content-Type": "application/json"
-}
+    return Table(api_key, base_id, table_name)
 
 def get_airtable_fields() -> list:
-    """
-    Retourne tous les noms de colonnes uniques présents dans Airtable.
-    Parcourt les 10 premiers enregistrements si besoin.
-    """
+    table = get_airtable_table()
     records = table.all(max_records=10)
     all_fields = set()
     for record in records:
         all_fields.update(record.get("fields", {}).keys())
     return sorted(list(all_fields))
 
-def add_prospect(
-    name: str,
-    email: str = None,
-    phone: str = None,
-    company: str = None,
-    source: str = None,
-    statut: str = "New"
-) -> str:
-    url = f"https://api.airtable.com/v0/{BASE_ID}/{TABLE_NAME}"
+def add_prospect(name: str, email: str = None, phone: str = None, company: str = None, source: str = None, statut: str = "New") -> str:
+    table = get_airtable_table()
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    table_name = os.getenv("AIRTABLE_TABLE_NAME")
+    api_key = os.getenv("AIRTABLE_API_KEY")
 
+    url = f"https://api.airtable.com/v0/{base_id}/{table_name}"
 
     fields = {
         "Lead Name": name,
@@ -54,21 +44,20 @@ def add_prospect(
         fields["Lead Source"] = source
 
     data = {"fields": fields}
-    response = requests.post(url, headers=HEADERS, json=data)
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
         return f"✅ Prospect ajouté : {name} ({statut})"
     else:
         return f"❌ Erreur Airtable : {response.status_code} - {response.text}"
-    
+
 def list_prospects(limit=10, filters: dict = None):
-    """
-    Liste les prospects avec un filtre dynamique.
-    Tu peux filtrer par n’importe quel champ (ex: Status, Company, Source…).
-    
-    Exemple :
-    list_prospects(limit=5, filters={"Status": "R1", "Company": "m2web"})
-    """
+    table = get_airtable_table()
     formula = ""
     if filters:
         conditions = [f"{{{field}}} = '{value}'" for field, value in filters.items()]
@@ -76,30 +65,35 @@ def list_prospects(limit=10, filters: dict = None):
         records = table.all(formula=formula, max_records=limit)
     else:
         records = table.all(max_records=limit)
-
     return records
 
 def update_prospect(record_id: str, fields_to_update: dict) -> str:
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    table_name = os.getenv("AIRTABLE_TABLE_NAME")
+    api_key = os.getenv("AIRTABLE_API_KEY")
 
-    url = f"https://api.airtable.com/v0/{BASE_ID}/{TABLE_NAME}/{record_id}"
+    url = f"https://api.airtable.com/v0/{base_id}/{table_name}/{record_id}"
     data = {"fields": fields_to_update}
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
-    response = requests.patch(url, headers=HEADERS, json=data)
+    response = requests.patch(url, headers=headers, json=data)
 
     if response.status_code == 200:
         return f"✅ Lead mis à jour ({record_id})"
     else:
         return f"❌ Erreur Airtable : {response.status_code} - {response.text}"
-    
+
 def find_prospect_by_name(name):
+    table = get_airtable_table()
     formula = f"FIND(LOWER('{name}'), LOWER({{Lead Name}}))"
     records = table.all(formula=formula)
     return records
 
 def get_leads_to_recontact() -> list:
-    """
-    Récupère les leads dont la 'Date to Recontact' est aujourd’hui.
-    """
+    table = get_airtable_table()
     today = date.today().isoformat()
     formula = f"IS_SAME({{Date to Recontact}}, '{today}', 'day')"
     return table.all(formula=formula)

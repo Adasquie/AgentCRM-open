@@ -3,6 +3,10 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from src.tools import airtable, google, telegram
 
+print("🚨 DEBUG ENV VARS (depuis server.py)")
+print("AIRTABLE_API_KEY:", os.getenv("AIRTABLE_API_KEY"))
+print("BASE_ID:", os.getenv("AIRTABLE_BASE_ID"))
+print("TABLE_NAME:", os.getenv("AIRTABLE_TABLE_NAME"))
 
 mcp = FastMCP("Prospection MCP Server")
 

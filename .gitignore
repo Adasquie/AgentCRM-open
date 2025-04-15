@@ -2,10 +2,6 @@
 .env
 *.env
 
-# Auth / secrets
-auth/credentials.json
-auth/token.json
-
 # Dossiers Python compilés
 __pycache__/
 *.py[cod]
