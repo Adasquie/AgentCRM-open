@@ -15,3 +15,4 @@ venv/
 # Fichiers de logs éventuels
 *.logauth/token.json
 auth/credentials.json
+auth/token.json
