@@ -7,3 +7,4 @@ openai==1.74.0
 pyairtable==3.0.2
 python-dotenv==1.1.0
 Requests==2.32.3
+python-telegram-bot==20.7
