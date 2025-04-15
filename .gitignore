@@ -13,4 +13,5 @@ venv/
 .DS_Store
 
 # Fichiers de logs éventuels
-*.log
+*.logauth/token.json
+auth/credentials.json
